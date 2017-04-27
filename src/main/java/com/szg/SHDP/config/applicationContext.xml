@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:hdp="http://www.springframework.org/schema/hadoop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.8.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+<!-- 	<hdp:hbase-configuration  zk-quorum="jhhy0"
+		zk-port="2181" />
+	<hdp:hbase-configuration zk-quorum="jhhy1"
+		zk-port="2181" />
+	<hdp:hbase-configuration zk-quorum="jhhy2"
+		zk-port="2181" />
+	<hdp:hbase-configuration id="hbaseConfiguration" stop-proxy="false"
+		delete-connection="true">
+		foo=bar
+		property=value
+	</hdp:hbase-configuration>
+	<bean id="htemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
+		<property name="configuration" ref="hbaseConfiguration"></property>
+	</bean> -->
+		<context:property-placeholder location="classpath:/com/szg/SHDP/config/hbase.properties"/>
+	<context:component-scan base-package="org.springframework.samples.hadoop.hbase"/>
+	<hdp:configuration id="hadoopConfiguration">
+	  fs.defaultFS=hdfs://jhhy1:8020
+	</hdp:configuration>
+	
+	<hdp:hbase-configuration configuration-ref="hadoopConfiguration" zk-quorum="${hbase.zk.host}" zk-port="${hbase.zk.port}"/>
+	
+	<bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
+		<property name="configuration" ref="hbaseConfiguration"/>
+	</bean>
+	<!-- 配置数据源 -->
+	<!-- <bean id="ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> 
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/> <property 
+		name="driverClassName" value="oracle.jdbc.OracleDriver"/> <property name="username" 
+		value="chris"/> <property name="password" value="123456"/> </bean> -->
+
+	<!-- 配置SqlSessionFactory -->
+	<!-- <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+		依赖数据源 <property name="dataSource" ref="ds" /> 指定要扫描的所有映射配置文件 <property name="mapperLocations" 
+		value="classpath:com/tarena/entity/*.xml"/> </bean> -->
+
+	<!-- 配置MyBatis注解 -->
+	<!-- Spring会根据这段配置，自动扫描带有指定注解的接口，然后自动创建这个接口的实现类， 并使用对应的xml中的Sql来实现对应的方法 
+		即，Spring会自动扫描指定的包下,带有注定注解的接口。 -->
+	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 指定要扫描的包 
+		<property name="basePackage" value="com.tarena.dao" /> 指定要扫描的注解，需要自定义 <property 
+		name="annotationClass" value="com.tarena.annotation.MyBatisDao"/> </bean> -->
+
+	<context:component-scan base-package="com.szg" />
+	<mvc:annotation-driven />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- 登录检查拦截器 -->
+	<!-- <mvc:interceptors> <mvc:interceptor> 第一个*是指controller类上的访问路径 第二个*是值controller方法上的方法路径 
+		<mvc:mapping path="/**"/> <mvc:exclude-mapping path="/login/toLogin.do"/> 
+		<mvc:exclude-mapping path="/login/checkLogin.do"/> <mvc:exclude-mapping path="/login/createImage.do"/> 
+		<bean class="com.tarena.interceptor.CheckLoginInterceptor"/> </mvc:interceptor> 
+		判断当前模块拦截器 <mvc:interceptor> <mvc:mapping path="/**"/> <bean class="com.tarena.interceptor.CurrentModelInterceptor"/> 
+		</mvc:interceptor> 模块权限检查拦截器 <mvc:interceptor> <mvc:mapping path="/**"/> 
+		<mvc:exclude-mapping path="/login/*"/> <bean class="com.tarena.interceptor.CheckModuleInterceptor"/> 
+		</mvc:interceptor> </mvc:interceptors> -->
+
+
+</beans>
